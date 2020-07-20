@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        *{
+            margin: 0px;
+        }
+        body{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100vw;
+            height: 100vh;
+        }
+        .container{
+            position: relative;
+            /* border: 1px solid tomato; */
+            width: 500px;
+            height: 500px;
+            
+        }
+        .planet{
+            width: 40px;
+            height: 40px;
+            border-radius: 50px;
+            background: rgb(0, 140, 255)
+
+        }
+        .sun{
+            width: 100px;
+            height: 100px;
+            border-radius: 100px;
+            background: rgb(255, 220, 104)
+        }
+        .moon{
+            width: 20px;
+            height: 20px;
+            border-radius: 20px;
+            background: rgb(207, 228, 255)
+        }
+        .mars{
+            width: 30px;
+            height: 30px;
+            border-radius: 40px;
+            background: rgb(231, 149, 82)
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="container">
+            <div class="planet"></div>
+            <div class="sun"></div>
+            <div class="moon"></div>
+            <div class="mars"></div>
+    </div>
+
+    <script>
+        class CelestialBody {
+            constructor(domRef, x, y){
+                this.domRef = domRef;
+                this.x = x;
+                this.y =y;
+                this.domRef.style.position = 'absolute';
+                this.domRef.style.left = this.x;
+                this.domRef.style.top = this.y;
+            }
+
+            getPosition(){
+                return {
+                    x: this.domRef.style.left,
+                    y: this.domRef.style.top
+                }
+            }
+            setPosition(newX, newY){
+                const midOffsetX = parseInt(this.domRef.offsetWidth/2);
+                const midOffsetY = parseInt(this.domRef.offsetHeight/2);
+                this.domRef.style.left = `${newX-midOffsetX}px`;
+                this.domRef.style.top = `${newY-midOffsetY}px`;
+            }
+            
+            revolve(theta, radiusOfOrbit, angularFrequency, targetDomRef){
+                // x = a cos theta
+                // y = a sin theta
+                const OFFSET_X = parseInt(targetDomRef.style.left.split('px')[0]) + targetDomRef.offsetWidth/2
+                const OFFSET_Y = parseInt(targetDomRef.style.top.split('px')[0]) +  targetDomRef.offsetHeight/2
+                let r = radiusOfOrbit;
+                let newX = parseInt(r * Math.cos(angularFrequency*theta))+ OFFSET_X
+                let newY = parseInt(r * Math.sin(angularFrequency*theta))+OFFSET_Y
+                this.setPosition(newX, newY)
+                console.log(newX, newY)
+            }
+
+        }
+
+        // ui grabbing
+
+        const earthRef = document.querySelector('.planet');
+        const sunRef = document.querySelector('.sun');
+        const moonRef = document.querySelector('.moon');
+        const marsRef = document.querySelector('.mars');
+
+        const sun = new CelestialBody(sunRef, 100, 100);
+        sun.setPosition(250, 250)
+        const earth = new CelestialBody(earthRef, 500, 500);
+        const moon = new CelestialBody(moonRef, 500, 500)
+        const mars = new CelestialBody(marsRef, 0, 0)
+
+        let increment = 0.0001;
+        const radiusOfOrbit = 150;
+        const angularFrequency = 0.01;
+        const update = ()=>{
+            increment++;
+            earth.revolve(increment, radiusOfOrbit, 0.01, sunRef)
+            moon.revolve(increment, 50, .1, earthRef)
+            mars.revolve(increment, 250, 0.02, sunRef)
+
+            requestAnimationFrame(update)
+        }
+
+        update()
+
+    </script>
+</body>
+</html>
